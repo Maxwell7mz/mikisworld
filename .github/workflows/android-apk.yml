@@ -1,4 +1,4 @@
-name: Build Miki's World Android APK
+name: Build Miki's World Android APK V2
 
 on:
   workflow_dispatch:
@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   build-android:
-    name: Build Android ARM64 APK
+    name: Build Android ARM64 APK V2
     runs-on: ubuntu-24.04
 
     steps:
@@ -73,8 +73,8 @@ jobs:
           fi
 
           mkdir -p artifacts
-          cp "$APK" artifacts/MikisWorld-Android-ARM64.apk
-          echo "path=artifacts/MikisWorld-Android-ARM64.apk" >> "$GITHUB_OUTPUT"
+          cp "$APK" artifacts/MikisWorld-Android-ARM64-V2.apk
+          echo "path=artifacts/MikisWorld-Android-ARM64-V2.apk" >> "$GITHUB_OUTPUT"
 
       - name: Align and sign APK
         shell: bash
@@ -83,7 +83,7 @@ jobs:
 
           KEYSTORE="$RUNNER_TEMP/mikisworld-debug.keystore"
           ALIGNED="$RUNNER_TEMP/MikisWorld-aligned.apk"
-          APK="artifacts/MikisWorld-Android-ARM64.apk"
+          APK="artifacts/MikisWorld-Android-ARM64-V2.apk"
           APKSIGNER="$ANDROID_HOME/build-tools/36.0.0/apksigner"
 
           keytool -genkeypair -noprompt \
@@ -116,7 +116,7 @@ jobs:
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MikisWorld-Android-ARM64
-          path: artifacts/MikisWorld-Android-ARM64.apk
+          name: MikisWorld-Android-ARM64-V2
+          path: artifacts/MikisWorld-Android-ARM64-V2.apk
           if-no-files-found: error
           retention-days: 14

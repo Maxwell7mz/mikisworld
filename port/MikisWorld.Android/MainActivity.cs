@@ -7,7 +7,7 @@ using AndroidGameActivity = Android.App.Activity;
 namespace MikisWorld.Android;
 
 [Activity(
-    Label = "Miki's World",
+    Label = "Miki's World V2",
     MainLauncher = true,
     Exported = true,
     ScreenOrientation = ScreenOrientation.Landscape,
