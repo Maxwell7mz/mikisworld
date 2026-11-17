@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-android36.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>MikisWorld.Android</RootNamespace>
+    <ApplicationId>com.mikisworld.android</ApplicationId>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
+    <AndroidPackageFormat>apk</AndroidPackageFormat>
+    <RuntimeIdentifiers>android-arm64</RuntimeIdentifiers>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Backups não fazem parte da compilação C# -->
+    <Compile Remove="backups/**/*.cs" />
+
+    <!-- Os JARs Java ME são recursos, não bibliotecas Android -->
+    <!-- JARs Java ME: recursos do jogo, nunca bindings Android -->
+    <AndroidLibrary Remove="Assets/JAR/*.jar" />
+    <AndroidJavaLibrary Remove="Assets/JAR/*.jar" />
+
+    <ProjectReference Include="../MikisWorld.Core/MikisWorld.Core.csproj" />
+
+
+  </ItemGroup>
+
+</Project>
