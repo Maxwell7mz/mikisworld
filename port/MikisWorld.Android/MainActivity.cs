@@ -24,9 +24,44 @@ public sealed class MainActivity : AndroidGameActivity
 
     protected override void OnCreate(Bundle savedInstanceState)
     {
-        base.OnCreate(savedInstanceState);
+        try
+        {
+            base.OnCreate(savedInstanceState);
+            ShowGameSelection();
+        }
+        catch (Exception ex)
+        {
+            ShowStartupError("Falha durante a inicialização", ex);
+        }
+    }
 
-        ShowGameSelection();
+    private void ShowStartupError(string title, Exception ex)
+    {
+        global::Android.Util.Log.Error("MikisWorld", title + ": " + ex);
+
+        try
+        {
+            var message = new global::Android.Widget.TextView(this)
+            {
+                Text = title + "\n\n" + ex,
+                TextSize = 14
+            };
+
+            message.SetTextColor(global::Android.Graphics.Color.White);
+            message.SetBackgroundColor(global::Android.Graphics.Color.Black);
+            message.SetPadding(24, 24, 24, 24);
+            message.SetTextIsSelectable(true);
+
+            var scroll = new global::Android.Widget.ScrollView(this);
+            scroll.AddView(message);
+            SetContentView(scroll);
+        }
+        catch (Exception displayError)
+        {
+            global::Android.Util.Log.Error(
+                "MikisWorld",
+                "Também falhou ao exibir o erro: " + displayError);
+        }
     }
 
     private void ShowGameSelection()
