@@ -76,6 +76,35 @@ jobs:
           cp "$APK" artifacts/MikisWorld-Android-ARM64.apk
           echo "path=artifacts/MikisWorld-Android-ARM64.apk" >> "$GITHUB_OUTPUT"
 
+      - name: Align and sign APK
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          KEYSTORE="$RUNNER_TEMP/mikisworld-debug.keystore"
+          ALIGNED="$RUNNER_TEMP/MikisWorld-aligned.apk"
+          APK="artifacts/MikisWorld-Android-ARM64.apk"
+          APKSIGNER="$ANDROID_HOME/build-tools/36.0.0/apksigner"
+
+          keytool -genkeypair -noprompt \
+            -keystore "$KEYSTORE" \
+            -storepass android \
+            -alias androiddebugkey \
+            -keypass android \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=Mikis World Debug"
+
+          zipalign -f -p 4 "$APK" "$ALIGNED"
+
+          "$APKSIGNER" sign \
+            --ks "$KEYSTORE" \
+            --ks-key-alias androiddebugkey \
+            --ks-pass pass:android \
+            --key-pass pass:android \
+            --out "$APK" "$ALIGNED"
+
+          "$APKSIGNER" verify --verbose --print-certs "$APK"
+
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
