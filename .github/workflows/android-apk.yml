@@ -94,7 +94,15 @@ jobs:
             -keyalg RSA -keysize 2048 -validity 10000 \
             -dname "CN=Mikis World Debug"
 
-          zipalign -f -p 4 "$APK" "$ALIGNED"
+          ZIPALIGN="$ANDROID_HOME/build-tools/36.0.0/zipalign"
+
+          if [ ! -x "$ZIPALIGN" ]; then
+            echo "ERRO: zipalign não encontrado em $ZIPALIGN"
+            ls -lah "$ANDROID_HOME/build-tools/36.0.0/"
+            exit 1
+          fi
+
+          "$ZIPALIGN" -f -p 4 "$APK" "$ALIGNED"
 
           "$APKSIGNER" sign \
             --ks "$KEYSTORE" \
