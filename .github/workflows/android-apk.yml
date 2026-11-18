@@ -64,19 +64,21 @@ jobs:
         id: apk
         shell: bash
         run: |
-          mapfile -t APKS < <(find port/MikisWorld.Android/bin/Debug/net10.0-android36.0 \
-            -type f -name '*.apk' | sort)
+          set -euo pipefail
 
-          if [ "${#APKS[@]}" -ne 1 ]; then
-            echo "ERRO: esperado exatamente 1 APK; encontrados: ${#APKS[@]}"
-            printf '%s\\n' "${APKS[@]}"
-            find port/MikisWorld.Android/bin -type f | head -100
+          APK="port/MikisWorld.Android/bin/Debug/net10.0-android36.0/publish/com.mikisworld.android.apk"
+
+          if [ ! -s "$APK" ]; then
+            echo "ERRO: APK esperado não encontrado ou vazio: $APK"
+            find port/MikisWorld.Android/bin/Debug/net10.0-android36.0 -type f -name '*.apk'
             exit 1
           fi
 
-          APK="${APKS[0]}"
           mkdir -p artifacts
           cp "$APK" artifacts/MikisWorld-Android-ARM64-V3.apk
+
+          echo "APK selecionado: $APK"
+          ls -lh artifacts/MikisWorld-Android-ARM64-V3.apk
           echo "path=artifacts/MikisWorld-Android-ARM64-V3.apk" >> "$GITHUB_OUTPUT"
 
       - name: Align and sign APK
