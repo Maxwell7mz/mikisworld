@@ -1,4 +1,4 @@
-name: Build Miki's World Android APK V2
+name: Build Miki's World Android APK V3
 
 on:
   workflow_dispatch:
@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   build-android:
-    name: Build Android ARM64 APK V2
+    name: Build Android ARM64 APK V3
     runs-on: ubuntu-24.04
 
     steps:
@@ -57,24 +57,27 @@ jobs:
             --configuration Debug \
             --framework net10.0-android36.0 \
             -p:AndroidPackageFormat=apk \
+            -p:EmbedAssembliesIntoApk=true \
             -p:AndroidSdkDirectory="$ANDROID_HOME"
 
       - name: Locate APK
         id: apk
         shell: bash
         run: |
-          APK="$(find port/MikisWorld.Android/bin/Debug/net10.0-android36.0 \
-            -type f -name '*.apk' | head -n 1)"
+          mapfile -t APKS < <(find port/MikisWorld.Android/bin/Debug/net10.0-android36.0 \
+            -type f -name '*.apk' | sort)
 
-          if [ -z "$APK" ]; then
-            echo "ERRO: nenhum APK foi encontrado."
+          if [ "${#APKS[@]}" -ne 1 ]; then
+            echo "ERRO: esperado exatamente 1 APK; encontrados: ${#APKS[@]}"
+            printf '%s\\n' "${APKS[@]}"
             find port/MikisWorld.Android/bin -type f | head -100
             exit 1
           fi
 
+          APK="${APKS[0]}"
           mkdir -p artifacts
-          cp "$APK" artifacts/MikisWorld-Android-ARM64-V2.apk
-          echo "path=artifacts/MikisWorld-Android-ARM64-V2.apk" >> "$GITHUB_OUTPUT"
+          cp "$APK" artifacts/MikisWorld-Android-ARM64-V3.apk
+          echo "path=artifacts/MikisWorld-Android-ARM64-V3.apk" >> "$GITHUB_OUTPUT"
 
       - name: Align and sign APK
         shell: bash
@@ -83,7 +86,7 @@ jobs:
 
           KEYSTORE="$RUNNER_TEMP/mikisworld-debug.keystore"
           ALIGNED="$RUNNER_TEMP/MikisWorld-aligned.apk"
-          APK="artifacts/MikisWorld-Android-ARM64-V2.apk"
+          APK="artifacts/MikisWorld-Android-ARM64-V3.apk"
           APKSIGNER="$ANDROID_HOME/build-tools/36.0.0/apksigner"
 
           keytool -genkeypair -noprompt \
@@ -116,7 +119,7 @@ jobs:
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MikisWorld-Android-ARM64-V2
-          path: artifacts/MikisWorld-Android-ARM64-V2.apk
+          name: MikisWorld-Android-ARM64-V3
+          path: artifacts/MikisWorld-Android-ARM64-V3.apk
           if-no-files-found: error
           retention-days: 14
